@@ -33,14 +33,13 @@ class ScreenShareInvisibleWindow {
                 contextIsolation: false,
                 hardwareAcceleration: true,
                 webgl: true,
-                backgroundThrottling: false, // Keep running when not focused
+                backgroundThrottling: false,
                 offscreen: false,
             },
-            // Additional stealth properties
             titleBarStyle: 'hidden',
-            trafficLightPosition: { x: -100, y: -100 }, // Hide traffic lights off-screen
-            hasShadow: false, // No shadow to avoid detection
-            thickFrame: false, // No thick frame
+            trafficLightPosition: { x: -100, y: -100 },
+            hasShadow: false, 
+            thickFrame: false,
             acceptFirstMouse: true,
             disableAutoHideCursor: true
         });
@@ -48,21 +47,15 @@ class ScreenShareInvisibleWindow {
         this.window.setOpacity(0.7)
         this.window.setIgnoreMouseEvents(true)
 
-        // Prevent window from being captured by screen sharing
         if (process.platform === 'win32') {
-            // Windows specific: Set window to be excluded from capture
             this.window.setContentProtection(true);
-            // Additional Windows-specific stealth
             this.window.setSkipTaskbar(true);
         } else if (process.platform === 'darwin') {
-            // macOS specific stealth settings
             this.window.setVisibleOnAllWorkspaces(false);
         }
         
-        // Make window draggable since we removed the frame
         this.window.loadFile('private-overlay.html');
         
-        // Optional: Add keyboard shortcut to toggle visibility
         this.setupGlobalShortcuts();
         
         this.window.show();
@@ -71,18 +64,10 @@ class ScreenShareInvisibleWindow {
     setupGlobalShortcuts() {
         const { globalShortcut } = require('electron');
         
-        // Ctrl+Shift+H to toggle window visibility
         globalShortcut.register('CommandOrControl+Shift+H', () => {
-            if (this.window.isVisible()) {
-                this.window.hide();
-                console.log('Window hidden');
-            } else {
-                this.window.show();
-                console.log('Window shown');
-            }
+            this.window.isVisible() ? this.window.hide() : this.window.show()
         });
 
-        // Ctrl+Shift+T to toggle always on top
         globalShortcut.register('CommandOrControl+Shift+T', () => {
             const isOnTop = this.window.isAlwaysOnTop();
             this.window.setAlwaysOnTop(!isOnTop);
@@ -91,7 +76,6 @@ class ScreenShareInvisibleWindow {
     }
 }
 
-// Usage
 const privateWindow = new ScreenShareInvisibleWindow();
 privateWindow.initialize();
 
@@ -109,7 +93,6 @@ app.on('activate', () => {
 });
 
 app.on('will-quit', () => {
-    // Unregister all shortcuts
     const { globalShortcut } = require('electron');
     globalShortcut.unregisterAll();
 });
