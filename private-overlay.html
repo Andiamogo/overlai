@@ -20,7 +20,7 @@
             -webkit-backdrop-filter: blur(20px);
             user-select: none; /* Prevent text selection during drag */
         }
-        
+
         .header {
             text-align: center;
             margin-bottom: 20px;
@@ -28,7 +28,7 @@
             padding-bottom: 10px;
             position: relative;
         }
-        
+
         .close-btn {
             position: absolute;
             top: -5px;
@@ -46,11 +46,11 @@
             justify-content: center;
             z-index: 1000;
         }
-        
+
         .close-btn:hover {
             background: rgba(255, 0, 0, 0.9);
         }
-        
+
         .drag-handle {
             position: absolute;
             top: 5px;
@@ -62,11 +62,11 @@
             border-radius: 2px;
             cursor: grab;
         }
-        
+
         .drag-handle:active {
             cursor: grabbing;
         }
-        
+
         .notes-section {
             background: rgba(255,255,255,0.1);
             border-radius: 8px;
@@ -74,14 +74,14 @@
             margin-bottom: 15px;
             backdrop-filter: blur(10px);
         }
-        
+
         .notes-section h3 {
             margin-top: 0;
             color: #fff;
             border-bottom: 1px solid rgba(255,255,255,0.2);
             padding-bottom: 5px;
         }
-        
+
         textarea {
             width: 100%;
             height: 80px;
@@ -94,11 +94,11 @@
             resize: vertical;
             box-sizing: border-box;
         }
-        
+
         textarea::placeholder {
             color: rgba(255,255,255,0.6);
         }
-        
+
         .timer {
             background: rgba(0,0,0,0.3);
             border-radius: 8px;
@@ -106,21 +106,21 @@
             text-align: center;
             margin-bottom: 15px;
         }
-        
+
         .timer-display {
             font-size: 24px;
             font-weight: bold;
             color: #4CAF50;
             margin-bottom: 5px;
         }
-        
+
         .controls {
             display: flex;
             gap: 5px;
             justify-content: center;
             flex-wrap: wrap;
         }
-        
+
         button {
             background: rgba(255,255,255,0.2);
             border: 1px solid rgba(255,255,255,0.3);
@@ -131,18 +131,18 @@
             font-size: 11px;
             transition: background 0.3s;
         }
-        
+
         button:hover {
             background: rgba(255,255,255,0.3);
         }
-        
+
         .shortcuts {
             font-size: 11px;
             color: rgba(255,255,255,0.7);
             margin-top: 10px;
             line-height: 1.4;
         }
-        
+
         .status {
             position: fixed;
             bottom: 5px;
@@ -156,16 +156,34 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="drag-handle"></div>
-        <h2>🕵️ Private Meeting Assistant</h2>
-        <small>Frameless & Screen-Share Invisible</small>
+    <div id="ai-analysis" class="ai-output">
+
     </div>
-    
+    <button onclick="clearAnalysis()">Clear</button>
+
     <div class="status">🔒 Private Mode</div>
-    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        
+
+      const { ipcRenderer } = require('electron');
+
+      // Listen for AI analysis results
+      ipcRenderer.on('ai-analysis', (event, analysis) => {
+          const analysisDiv = document.getElementById('ai-analysis');
+          analysisDiv.innerHTML = marked.parse(analysis);
+
+          // Auto-save the analysis
+          localStorage.setItem('lastAIAnalysis', analysis);
+      });
+
+      ipcRenderer.on('move', (event, direction) => {
+        const scrollAmount = 100;
+        window.scrollBy(0, direction === 'up' ? -scrollAmount : scrollAmount)
+      })
+
+      const clearAnalysis = () => {
+        document.getElementById('ai-analysis').innerHTML = '';
+      }
     </script>
 </body>
 </html>
