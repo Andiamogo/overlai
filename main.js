@@ -1,5 +1,4 @@
 const { app, BrowserWindow, Menu, screen } = require('electron');
-const path = require('path');
 require('dotenv').config()
 
 class ScreenShareInvisibleWindow {
@@ -69,11 +68,10 @@ class ScreenShareInvisibleWindow {
       const screenshot = require('screenshot-desktop');
           const axios = require('axios');
           const sharp = require('sharp');
-          const fs = require('fs');
-          const path = require('path');
 
           try {
               console.log('Taking screenshot...');
+              this.window.webContents.send('loading');
 
               // Capture screenshot
               const imgBuffer = await screenshot({ format: 'png' });
@@ -122,7 +120,7 @@ class ScreenShareInvisibleWindow {
             }, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': process.env.CLAUDE_API_KEY || 'YOUR_API_KEY_HERE',
+                    'x-api-key': process.env.CLAUDE_API_KEY,
                     'anthropic-version': '2023-06-01'
                 }
             });
@@ -150,12 +148,20 @@ class ScreenShareInvisibleWindow {
           this.captureAndAnalyze()
         })
 
-        globalShortCut.register('CommandOrControl+Shift+Up', () => {
+        globalShortcut.register('CommandOrControl+Shift+Up', () => {
           this.window.webContents.send('move', 'up');
         })
 
-        globalShortCut.register('CommandOrControl+Shift+Down', () => {
+        globalShortcut.register('CommandOrControl+Shift+Down', () => {
           this.window.webContents.send('move', 'down');
+        })
+
+        globalShortcut.register('CommandOrControl+Shift+T', () => {
+          this.window.webContents.send('test')
+        })
+
+        globalShortcut.register('CommandOrControl+Shift+G', () => {
+          app.quit()
         })
     }
 }

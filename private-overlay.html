@@ -157,15 +157,18 @@
 </head>
 <body>
     <div id="ai-analysis" class="ai-output">
-
     </div>
-    <button onclick="clearAnalysis()">Clear</button>
 
     <div class="status">🔒 Private Mode</div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
 
       const { ipcRenderer } = require('electron');
+
+      ipcRenderer.on('loading', (event) => {
+        const analysisDiv = document.getElementById('ai-analysis');
+        analysisDiv.innerHTML = 'Loading...'
+      })
 
       // Listen for AI analysis results
       ipcRenderer.on('ai-analysis', (event, analysis) => {
@@ -181,9 +184,6 @@
         window.scrollBy(0, direction === 'up' ? -scrollAmount : scrollAmount)
       })
 
-      const clearAnalysis = () => {
-        document.getElementById('ai-analysis').innerHTML = '';
-      }
     </script>
 </body>
 </html>
