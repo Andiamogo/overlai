@@ -2,3 +2,4 @@ node_modules/
 .git-credentials
 dist/
 .env
+.DS_Store
